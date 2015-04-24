@@ -11,58 +11,81 @@
         <link href="public/css/subttl.css" rel="stylesheet" type="text/css" media="all"/>
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-sanitize.js"></script>
-        
-        <script>
-    angular.module('subttlApp', ['ngSanitize'])
-    .controller('subtitleSearchCtrl', function ($scope, $sce, $http) {
-        $scope.hits = {};
-        $scope.lang = 'fr';
-        $scope.sendPost = function() {
-            console.log($scope)
-            var data = {
-                          "query": {
-                            "bool": {
-                              "should": {
-                                "match": {
-                                  "subtitles.en": { 
-                                    "query": $scope.searchText
-                                  }
-                                }
-                              },
-                              "should": {
-                                "match": {
-                                  "subtitles.fr": { 
-                                    "query": $scope.searchText
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "highlight": {
-                            "fields": {
-                              "subtitles.en": { 
-                                "fragment_size":1000
-                              },
-                              "subtitles.fr": { 
-                                "fragment_size":1000
-                              }
+
+      <script>
+        angular.module('subttlApp', ['ngSanitize'])
+            .controller('subtitleSearchCtrl', function ($scope, $sce, $http) {
+              $scope.hits = {};
+              $scope.sendPost = function () {
+                console.log($scope);
+                var data = {
+                  "query": {
+                    "bool": {
+                      "should": [
+                        {
+                          "match_phrase": {
+                            "subtitles.en": {
+                              "query": $scope.searchText,
+                              "boost": 10.0,
+                              "analyzer": "language_en"
                             }
                           }
-                        };
-            $http.post("http://norman-vm1.nfb.ca:9200/nfb_films/films/_search", data ).success(function(data, status) {
-                $scope.hits = data.hits.hits;
-                $scope.hits.highlight_subtitles = [];
-                $scope.hits.highlight_subtitles = $scope.hits.highlight['subtitles.en'];//.concat(scope.hits.highlight['subtitles.fr'])
-                $scope.lang = 'fr';
+                        },
+                        {
+                          "match_phrase": {
+                            "subtitles.fr": {
+                              "query": $scope.searchText,
+                              "boost": 10.0,
+                              "analyzer": "language_fr"
+                            }
+                          }
+                        },
+                        {
+                          "match": {
+                            "subtitles.en": {
+                              "query": $scope.searchText,
+                              "analyzer": "language_en"
+                            }
+                          }
+                        },
+                        {
+                          "match": {
+                            "subtitles.fr": {
+                              "query": $scope.searchText,
+                              "analyzer": "language_fr"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "highlight": {
+                    "fragment_size": 1000,
+                    "fields": {
+                      "subtitles.en": {
+                        "order": "score"
+                      },
+                      "subtitles.fr": {
+                        "order": "score"
+                      }
+                    }
+                  }
+                };
+                $http.post("http://norman-vm1.nfb.ca:9200/nfb_films/films/_search", data).success(function (data, status) {
+                  $scope.hits = data.hits.hits;
+                  for (var i = 0; i < $scope.hits.length; i++) {
+                    var hit = $scope.hits[i];
+                    var sub_en = typeof(hit.highlight['subtitles.en']) != "undefined" ? hit.highlight['subtitles.en'] : [];
+                    var sub_fr = typeof(hit.highlight['subtitles.fr']) != "undefined" ? hit.highlight['subtitles.fr'] : [];
+                    hit["highlight_subtitles"] = [].concat(sub_en, sub_fr);
+                  }
+                })
+              }
             })
-        }                   
-    })
-    </script>
-    
-        <style>
+      </script>
 
-
-        </style>
+      <style>
+      </style>
         <!-- TODO: Complete this project :) -->
     </head>
     <body>
@@ -96,16 +119,19 @@
 
 <div class="resultats">
     <ul class="liste-resultats list-unstyled">
-        <li class="resultat" ng-repeat="x in hits">
-            <div><img ng-src={{x._source.thumbnail_url.replace('https:','http:')}} alt=""></div>
-            <h2 class="titre-film">{{ x._source.title }}</h2>
+        <li class="resultat" ng-repeat="hit in hits">
+            <div><img ng-src={{hit._source.thumbnail_url.replace('https:','http:')}} alt=""></div>
+            <h2 class="titre-film">{{ hit._source.title }}</h2>
             <div>
-                    <blockquote ng-repeat="tt in x.highlight['subtitles.fr'].concat(x.highlight['subtitles.en'])">
-                    <!--blockquote ng-repeat="tt in x.highlight_subtitles"-->
+                    
+                    <blockquote ng-repeat="tt in hit.highlight_subtitles">
                     <div>
                         <p ng-bind-html="tt.substring(14)"></p>
                         <footer>
-                            <a data-timecode="{{ tt.substring(1, 13) }}" data-mp4="{{ x.video_url }}" data-vtt="http://norman-vm1.nfb.ca/subttl/FLASH/flash4{{ x._source.subtitles.ttxt_url_fr.replace('.ttxt', '.vtt') }}" 
+                            <a data-timecode="{{ tt.substring(1, 13) }}" 
+                                data-mp4="http://nfbca-stream.nfbcdn.ca{{ hit._source.video_url }}" 
+                                data-vtt-fr="http://norman-vm1.nfb.ca/subttl/FLASH/flash4{{ hit._source.subtitles.ttxt_url_fr.replace('.ttxt', '.vtt') }}" 
+                                data-vtt-en="http://norman-vm1.nfb.ca/subttl/FLASH/flash4{{ hit._source.subtitles.ttxt_url_en.replace('.ttxt', '.vtt') }}" 
                                 class="play-clip" data-toggle="modal" data-target="#myModal">
                             <i class="fa fa-clock-o"></i> {{ tt.substring(1, 13) }} <i class="fa fa-play-circle"></i>
                             </a>
@@ -128,37 +154,27 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        <p id="timecode"> 00:00:00.000 </p>
       </div>
       <div class="modal-body">
       <!--p id="timecode"> . </p-->
       <video height="50%" width="50%" style="display:block; margin: 0 auto;" id="videoTag"  controls>
-        <source src="http://nfbca-stream.nfbcdn.ca/FLASH/flash4/collection4/streams/M1M/films/1000_413526_406706_VI26048000_-.mp4" type="video/mp4" />
-        <track label="English" kind="subtitles" srclang="en" src="http://norman-vm1.nfb.ca/subttl/FLASH/flash4/collection4/streams/TTXT/films/426106_532167_67_-.vtt" default />
+        <source id="sourceTag" src="" type="video/mp4" />
+        <track id="trackTag" label="English" kind="subtitles" srclang="en" src="" default />
         <p class="warning">Your browser does not support HTML5 video.</p>
       </video>
       
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
 </div>
 
-
-    </div>
         <script src="http://code.jquery.com/jquery.min.js"></script>
         <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-         <script type="text/javascript">
+        <script type="text/javascript">
     var myTimecode = "00:00:00.000";
     var myVTT = ""
     var myMP4 = ""
-    //var myTimecode = "00:00:00.000";
-    //var sec = myTimecode.split('.');
-    //var tt = sec[0].split(':');
-    //var tSeek = getTimeSeek(myTimecode);
 
     function getTimeSeek (timeStamp){
       var sec = timeStamp.split('.');
@@ -177,8 +193,12 @@
     $('#myModal').on('shown.bs.modal', function() {
         //$("#timecode").val("00:15:35.279");
         
-        //$('#divVideo video source').attr('src', myMP4);
-        $('#divVideo video track').attr('src', myVTT);
+        console.log(myMP4);
+        $('#videoTag video source').attr('src', myMP4);
+        console.log(myVTT);
+        //$('#trackTag').attr('src', myVTT);
+        $('#videoTag video track').attr('src', myVTT);
+        $('#videoTag video')[0].load();
         var timecode = myTimecode
         console.log(timecode)
         //var timestamp = "00:15:35.279"
@@ -192,11 +212,9 @@
     $(document).on("click", ".play-clip", function () {
      myTimecode = $(this).data('timecode');
      myMP4 = $(this).data('mp4');
-     myVTT = $(this).data('vtt');
-     alert(myVTT)
+     myVTT = $(this).data('vtt-fr');
+     if(!myVTT.endsWith('.vtt')){myVTT = $(this).data('vtt-en');}
 });
-
-
       </script>
     </body>
 </html>
