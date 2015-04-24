@@ -44,16 +44,16 @@
 	<div class="head">
 		<h1 class="brand">Subttl</h1>
 		
-<div class="search-boite big-boite">
-		<form ng-submit="sendPost()">
-			<div class="row sfield">
-				<div class="col-xs-1"><i class="fa fa-quote-left fa-2x"></i></div>
-				<div class="col-xs-10 col-sm-8"><input ng-model="searchText" type="text" class="form-control input-lg" placeholder="Recherche dans les sous-titres" /> </div>
-				<div class="col-xs-1"><i class="fa fa-quote-right fa-2x"></i></div>
-				<div class="col-sm-2"><button type=submit class="btn btn-default btn-lg">&nbsp; <i class="fa fa-search fa-lg"></i> &nbsp; <span class="hidden-lg hidden-md hidden-sm">Recherche</span></button></div>
-			</div>
-		</form> 
-</div>
+		<div class="search-boite big-boite">
+				<form ng-submit="sendPost()">
+					<div class="row sfield">
+						<div class="col-xs-1"><i class="fa fa-quote-left fa-2x"></i></div>
+						<div class="col-xs-10 col-sm-8"><input ng-model="searchText" type="text" class="form-control input-lg" placeholder="Recherche dans les sous-titres" /> </div>
+						<div class="col-xs-1"><i class="fa fa-quote-right fa-2x"></i></div>
+						<div class="col-sm-2"><button type=submit class="btn btn-default btn-lg">&nbsp; <i class="fa fa-search fa-lg"></i> &nbsp; <span class="hidden-lg hidden-md hidden-sm">Recherche</span></button></div>
+					</div>
+				</form> 
+		</div>
 	
 	</div>
 
@@ -76,24 +76,22 @@
 </div-->
 
 <div class="resultats">
-<ul class="liste-resultats list-unstyled" ng-repeat="x in hits">
-	<li class="resultat">
-		<div class="row">
-			<div class="col-xs-3"><img src={{x._source.thumbnail_url.replace('https:','http:')}} alt=""></div>
-			<div class="col-xs-9">
+	<ul class="liste-resultats list-unstyled" ng-repeat="x in hits">
+		<li class="resultat">
+			<div><img src={{x._source.thumbnail_url.replace('https:','http:')}} alt=""></div>
+			<h2 class="titre-film">{{ x._source.title }}</h2>
+			<div>
 					<blockquote ng-repeat="tt in x.highlight['subtitles.en']">
 					<div>
 						<p ng-bind-html="tt.substring(14)"></p>
-						<footer><cite><a href="#">{{ x._source.title }}</a></cite> @ timecode {{ tt.substring(1, 13) }}
+						<footer><cite><a href="#">{{ x._source.title }}</a></cite> @ {{ tt.substring(1, 13) }}
 						<a href="#" class="play-clip" data-toggle="modal" data-target="#myModal">
 						<i class="fa fa-play-circle"></i> jouer l'extrait </a></footer>
 					</div>
 					</blockquote>
 			</div>
-		</div>
-		
-	</li>
-</ul>
+		</li>
+	</ul>
 </div>
 
 
