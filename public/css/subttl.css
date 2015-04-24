@@ -49,12 +49,7 @@ h1.brand {
 .search-boite button {
   width: 100%;
 }
-@media (max-width: 768px) {
-  .search-boite button {
-    margin-top: 2em;
-    width: auto;
-  }
-}
+
 .form-inline .form-group {
   width: 100%;
 }
@@ -76,10 +71,11 @@ h1.brand {
   max-width: 640px
 }
 .resultats ul{margin:0 2rem;}
-.resultat{margin-bottom: 4rem}
+.resultat{margin-bottom: 5rem}
 .resultat .titre-film{font-size: 2.4rem;text-align: center;color:#666;font-weight: 100}
 .resultat img {
   width: 100%;
+  border:1px solid #ddd;
   border-radius: 50%;
   transition: all 0.2s ease;
     max-width: 204px;
@@ -118,6 +114,12 @@ h1.brand {
 }
 .resultat footer {
   font-size: 1.5rem;
+}
+.resultat footer:before {
+  content: " ";
+}
+.resultat footer .fa-play-circle {
+  margin-left:1rem;
 }
 .resultat cite {
   font-weight: 700;
