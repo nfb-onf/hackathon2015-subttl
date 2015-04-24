@@ -72,7 +72,7 @@ h1.brand {
 }
 .resultats ul{margin:0 2rem;}
 .resultat{margin-bottom: 5rem}
-.resultat .titre-film{font-size: 2.4rem;text-align: center;color:#666;font-weight: 100}
+.resultat .titre-film{font-size: 2.4rem;text-align: center;color:#666;font-weight: 100;  transition: all 0.2s ease;}
 .resultat img {
   width: 100%;
   border:1px solid #ddd;
@@ -88,6 +88,7 @@ h1.brand {
   -webkit-filter: grayscale(100%);
   filter: grayscale(100%);
 }
+.resultat:hover .titre-film { color: #1a965d;}
 .resultat:hover img {
   opacity: 1;
   -webkit-filter: grayscale(0%);
@@ -98,12 +99,14 @@ h1.brand {
   padding-left: 0;
   text-align: center
 }
+.resultat blockquote p{font-style: italic;}
 .resultat blockquote p:before,
 .resultat blockquote p:after {
   font-family: "FontAwesome";
   content: "\f10d";
   font-size: 60%;
   vertical-align: top;
+  color:#666s;
 }
 .resultat blockquote p:before {
   padding-right: 1rem;
@@ -125,11 +128,12 @@ h1.brand {
   font-weight: 700;
 }
 .resultat .highlite {
-  background-color: #7ae8b6;
+  background-color: #bbf3da;
   padding: 0 0.5rem;
 }.resultat em {
-  background-color: #7ae8b6;
+  background-color: #bbf3da;
   padding: 0 0.5rem;
+  font-style: normal;
 }
 .resultat .play-clip {
   float: right;
