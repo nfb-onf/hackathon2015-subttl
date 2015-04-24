@@ -194,11 +194,11 @@
         //$("#timecode").val("00:15:35.279");
         
         console.log(myMP4);
-        $('#videoTag video source').attr('src', myMP4);
+        $('#videoTag source').attr('src', myMP4);
         console.log(myVTT);
         //$('#trackTag').attr('src', myVTT);
-        $('#videoTag video track').attr('src', myVTT);
-        $('#videoTag video')[0].load();
+        $('#videoTag track').attr('src', myVTT);
+        $('#videoTag')[0].load();
         var timecode = myTimecode
         console.log(timecode)
         //var timestamp = "00:15:35.279"
