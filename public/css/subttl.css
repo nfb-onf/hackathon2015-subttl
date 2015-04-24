@@ -49,12 +49,7 @@ h1.brand {
 .search-boite button {
   width: 100%;
 }
-@media (max-width: 768px) {
-  .search-boite button {
-    margin-top: 2em;
-    width: auto;
-  }
-}
+
 .form-inline .form-group {
   width: 100%;
 }
