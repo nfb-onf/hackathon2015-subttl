@@ -44,7 +44,8 @@
                           "match": {
                             "subtitles.en": {
                               "query": $scope.searchText,
-                              "analyzer": "language_en"
+                              "analyzer": "language_en",
+                              "minimum_should_match": "75%"
                             }
                           }
                         },
@@ -52,7 +53,8 @@
                           "match": {
                             "subtitles.fr": {
                               "query": $scope.searchText,
-                              "analyzer": "language_fr"
+                              "analyzer": "language_fr",
+                              "minimum_should_match": "75%"
                             }
                           }
                         }
