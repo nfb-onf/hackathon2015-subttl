@@ -46,9 +46,13 @@ h1.brand {
 .search-boite .fa-quote-left {
   margin-right: -30px;
 }
+.search-boite button {
+  width: 100%;
+}
 @media (max-width: 768px) {
   .search-boite button {
     margin-top: 2em;
+    width: auto;
   }
 }
 .form-inline .form-group {

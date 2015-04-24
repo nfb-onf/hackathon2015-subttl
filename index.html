@@ -81,8 +81,8 @@
 		<div class="row">
 			<div class="col-xs-3"><img src={{x._source.thumbnail_url.replace('https:','http:')}} alt=""></div>
 			<div class="col-xs-9">
-					<blockquote>
-					<div ng-repeat="tt in x.highlight['subtitles.en']" >
+					<blockquote ng-repeat="tt in x.highlight['subtitles.en']">
+					<div>
 						<p ng-bind-html="tt.substring(14)"></p>
 						<footer><cite><a href="#">{{ x._source.title }}</a></cite> @ timecode {{ tt.substring(1, 13) }}
 						<a href="#" class="play-clip" data-toggle="modal" data-target="#myModal">
