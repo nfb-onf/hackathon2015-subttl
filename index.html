@@ -89,7 +89,10 @@
 					<blockquote ng-repeat="tt in x.highlight['subtitles.en']">
 					<div>
 						<p ng-bind-html="tt.substring(14)"></p>
-						<footer><i class="fa fa-clock-o"></i> {{ tt.substring(1, 13) }} <i class="fa fa-play-circle"></i>
+						<footer>
+							<a href="#" class="play-clip" data-toggle="modal" data-target="#myModal">
+							<i class="fa fa-clock-o"></i> {{ tt.substring(1, 13) }} <i class="fa fa-play-circle"></i>
+							</a>
 						</footer>
 					</div>
 					</blockquote>
