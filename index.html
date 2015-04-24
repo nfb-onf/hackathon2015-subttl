@@ -18,12 +18,24 @@
 		$scope.hits = {};
 		$scope.sendPost = function() {
 			console.log($scope)
-			var data = {query:{match:{"subtitles.en": {"query": $scope.searchText}}}, "highlight": {"fields": {"subtitles.en": {}}}};
+			var data = {
+        query: {
+          match: {
+            "subtitles.en": {
+              "query": $scope.searchText
+            }
+          }
+        },
+        "highlight": {
+          "fields": {
+            "subtitles.en": {
+              "fragment_size" : 1000
+            }
+          }
+        }
+      };
 			$http.post("http://norman-vm1.nfb.ca:9200/nfb_films/films/_search", data ).success(function(data, status) {
 				$scope.hits = data.hits.hits;
-				for(var i=0;i<$scope.hits.highlight['subtitles.en'].lenght;i++) {
-					$scope.hits.highlight['subtitles.en'][i] = $sce.trustAsHtml($scope.hits.highlight['subtitles.en'][i])
-				}
 			})
 		}                   
 	})
@@ -78,7 +90,7 @@
 <div class="resultats">
 	<ul class="liste-resultats list-unstyled" ng-repeat="x in hits">
 		<li class="resultat">
-			<div><img src={{x._source.thumbnail_url.replace('https:','http:')}} alt=""></div>
+			<div><img ng-src={{x._source.thumbnail_url.replace('https:','http:')}} alt=""></div>
 			<h2 class="titre-film">{{ x._source.title }}</h2>
 			<div>
 					<blockquote ng-repeat="tt in x.highlight['subtitles.en']">
