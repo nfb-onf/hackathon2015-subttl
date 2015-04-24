@@ -110,7 +110,7 @@
         <h4 class="modal-title" id="myModalLabel">Modal title</h4>
       </div>
       <div class="modal-body">
-      <video height="200" width="480" id="videoTag"  controls autoplay>
+      <video height="50%" width="50%" style="display:block; margin: 0 auto;" id="videoTag"  controls>
         <source src="http://nfbca-stream.nfbcdn.ca/FLASH/flash4/collection4/streams/M1M/films/1000_413526_406706_VI26048000_-.mp4" type="video/mp4">
         <p class="warning">Your browser does not support HTML5 video.</p>
       </video>
@@ -124,17 +124,23 @@
 </div>
  <script type="text/javascript">
 var timestamp = "00:33:35.279";
+var timestamp = "00:00:00.000";
 var sec = timestamp.split('.');
 var tt = sec[0].split(':');
 var tSeek = getTimeSeek(timestamp);
 document.getElementById('videoTag').addEventListener('loadedmetadata', function() {
   this.currentTime = tSeek
+  //this.play();
 }, false);
 function getTimeSeek (timeStamp){
   var sec = timeStamp.split('.');
   var tt = sec[0].split(':');
   return tt[0]*3600+tt[1]*60+tt[2]*1;
 }
+
+$('#myModal').on('shown.bs.modal', function() {
+    $("#txtname").focus();
+})
       </script>
 
         </div>
