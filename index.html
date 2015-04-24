@@ -11,53 +11,80 @@
         <link href="public/css/subttl.css" rel="stylesheet" type="text/css" media="all"/>
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-sanitize.js"></script>
-		
-		<script>
-	angular.module('subttlApp', ['ngSanitize'])
-	.controller('subtitleSearchCtrl', function ($scope, $sce, $http) {
-		$scope.hits = {};
-		$scope.sendPost = function() {
-			console.log($scope)
-			var data = {
-						  "query": {
-							"bool": {
-							  "should": {
-								"match": {
-								  "subtitles.en": { 
-									"query": $scope.searchText
-								  }
-								}
-							  },
-							  "should": {
-								"match": {
-								  "subtitles.fr": { 
-									"query": $scope.searchText
-								  }
-								}
-							  }
-							}
-						  },
-						  "highlight": {
-							"fields": {
-							  "subtitles.en": { 
-								"fragment_size":1000
-							  },
-							  "subtitles.fr": { 
-								"fragment_size":1000
-							  }
-							}
-						  }
-						};
-			$http.post("http://norman-vm1.nfb.ca:9200/nfb_films/films/_search", data ).success(function(data, status) {
-				$scope.hits = data.hits.hits;
-				$scope.hits.highlight_subtitles = [];
-				$scope.hits.highlight_subtitles = scope.hits.highlight['subtitles.en'];//.concat(scope.hits.highlight['subtitles.fr'])
-			})
-		}                   
-	})
-	</script>
-	
-        <style>
+
+      <script>
+        angular.module('subttlApp', ['ngSanitize'])
+            .controller('subtitleSearchCtrl', function ($scope, $sce, $http) {
+              $scope.hits = {};
+              $scope.sendPost = function () {
+                console.log($scope);
+                var data = {
+                  "query": {
+                    "bool": {
+                      "should": [
+                        {
+                          "match_phrase": {
+                            "subtitles.en": {
+                              "query": $scope.searchText,
+                              "boost": 10.0,
+                              "analyzer": "language_en"
+                            }
+                          }
+                        },
+                        {
+                          "match_phrase": {
+                            "subtitles.fr": {
+                              "query": $scope.searchText,
+                              "boost": 10.0,
+                              "analyzer": "language_en"
+                            }
+                          }
+                        },
+                        {
+                          "match": {
+                            "subtitles.en": {
+                              "query": $scope.searchText,
+                              "analyzer": "language_fr"
+                            }
+                          }
+                        },
+                        {
+                          "match": {
+                            "subtitles.fr": {
+                              "query": $scope.searchText,
+                              "analyzer": "language_fr"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "highlight": {
+                    "fragment_size": 1000,
+                    "fields": {
+                      "subtitles.en": {
+                        "order": "score"
+                      },
+                      "subtitles.fr": {
+                        "order": "score"
+                      }
+                    }
+                  }
+                };
+                $http.post("http://norman-vm1.nfb.ca:9200/nfb_films/films/_search", data).success(function (data, status) {
+                  $scope.hits = data.hits.hits;
+                  for (var i = 0; i < $scope.hits.length; i++) {
+                    var hit = $scope.hits[i];
+                    var sub_en = typeof(hit.highlight['subtitles.en']) != "undefined" ? hit.highlight['subtitles.en'] : [];
+                    var sub_fr = typeof(hit.highlight['subtitles.fr']) != "undefined" ? hit.highlight['subtitles.fr'] : [];
+                    hit["highlight_subtitles"] = [].concat(sub_en, sub_fr);
+                  }
+                })
+              }
+            })
+      </script>
+
+      <style>
 
 
         </style>
@@ -91,32 +118,14 @@
 	
 	</div>
 
-
-<!--div class="resultats">
-<ul class="liste-resultats list-unstyled">
-	<li class="resultat">
-		<div class="row">
-			<div class="col-xs-3"><img src="https://media1.onf.ca/medias/nfb_tube/cache/11/87/11879559ec00edb2e848c212df4197f2.jpg" alt=""></div>
-			<div class="col-xs-9">
-			<blockquote>
-			<p>Lorem is the ipsum of life Lorem is <span class="highlite">the ipsum of</span> life Lorem is the ipsum of <em>life</em>.</p>
-			<footer><cite><a href="#">Movie title</a></cite> @ timecode <a href="#" class="play-clip" data-toggle="modal" data-target="#myModal"><i class="fa fa-play-circle"></i> jouer l'extrait </a></footer>
-		</blockquote>
-			</div>
-		</div>
-		
-	</li>
-</ul>
-</div-->
-
 <div class="resultats">
 	<ul class="liste-resultats list-unstyled">
-		<li class="resultat" ng-repeat="x in hits">
-			<div><img ng-src={{x._source.thumbnail_url.replace('https:','http:')}} alt=""></div>
-			<h2 class="titre-film">{{ x._source.title }}</h2>
+		<li class="resultat" ng-repeat="hit in hits">
+			<div><img ng-src="{{ hit._source.thumbnail_url.replace('https:','http:') }}" alt=""></div>
+			<h2 class="titre-film">{{ hit._source.title }}</h2>
 			<div>
-					<blockquote ng-repeat="tt in x.highlight['subtitles.fr'].concat(x.highlight['subtitles.en'])">
-					<!--blockquote ng-repeat="tt in x.highlight_subtitles"-->
+					<blockquote ng-repeat="tt in hit.highlight_subtitles">
+					<!--blockquote ng-repeat="tt in hit.highlight_subtitles"-->
 					<div>
 						<p ng-bind-html="tt.substring(14)"></p>
 						<footer>
@@ -156,8 +165,6 @@
   </div>
 </div>
 
-
-    </div>
         <script src="http://code.jquery.com/jquery.min.js"></script>
         <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 		 <script type="text/javascript">
@@ -186,7 +193,7 @@
 		//$("#timecode").val("00:15:35.279");
 		var timestamp = "00:15:35.279"
 		var tSeek = getTimeSeek(timestamp);
-		$("#videoTag")get(0).currentTime = tSeek;
+		$("#videoTag").get(0).currentTime = tSeek;
 		$("#videoTag").get(0).play()
 		$("#timecode").val(timestamp);
 	});
