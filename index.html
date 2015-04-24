@@ -154,10 +154,7 @@
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <p id="timecode"> 00:00:00.000 </p>
-      </div>
+
       <div class="modal-body">
       <!--p id="timecode"> . </p-->
       <video  width="100%" style="display:block; margin: 0 auto;" id="videoTag"  controls>
@@ -190,8 +187,7 @@
         $('#videoTag').trigger('pause');
     });
      
-    
-    
+
     $('#myModal').on('shown.bs.modal', function() {
         //$("#timecode").val("00:15:35.279");
         
