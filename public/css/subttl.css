@@ -139,6 +139,6 @@ h1.brand {
   font-style: normal;
 }
 
-.modal-backdrop{z-index: -1;background-color: #d1ecd7}
-
+.modal-backdrop{z-index: -1;background-color: #efefec;opacity: 0.75}
+.modal-content{background-color: #efefec}
 
