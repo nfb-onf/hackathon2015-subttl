@@ -1,7 +1,7 @@
 body {
   font-family: "proxima-nova", sans-serif;
   color: #242424;
-  background-color: #eeeeee;
+  background-color: #efefec;
 }
 body .container {
   max-width: 800px;
@@ -48,6 +48,9 @@ h1.brand {
 }
 .search-boite button {
   width: 100%;
+}
+.search-boite button:active, .search-boite button:focus, .search-boite button:active:focus {
+  outline: none;
 }
 
 .form-inline .form-group {
