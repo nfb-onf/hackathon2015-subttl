@@ -111,6 +111,9 @@ h1.brand {
 .resultat .highlite {
   background-color: #7ae8b6;
   padding: 0 0.5rem;
+}.resultat em {
+  background-color: #7ae8b6;
+  padding: 0 0.5rem;
 }
 .resultat .play-clip {
   float: right;
