@@ -122,8 +122,12 @@ h1.brand {
 .resultat footer {
   font-size: 1.5rem;
 }
+
 .resultat footer:before {
   content: " ";
+}
+.resultat footer a{
+  padding-left: 1em;
 }
 .resultat footer .fa-play-circle {
   margin-left:1rem;
